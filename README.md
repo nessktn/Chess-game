@@ -1,4 +1,4 @@
-# Chess Engine
+# Chess Game
 
 A simple chess game with a graphical interface built using Python, pygame, and python-chess.
 
