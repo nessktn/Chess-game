@@ -8,7 +8,7 @@ def create_piece_image(piece_type, color):
     surface = pygame.Surface((size, size), pygame.SRCALPHA)
     
     # Colors
-    gold = (255, 215, 0)  # Gold color for white pieces
+    gold = (255, 255, 0)  # Gold color for white pieces
     dark_gray = (64, 64, 64)  # Dark gray for black pieces
     piece_color = gold if color == 'white' else dark_gray
     
