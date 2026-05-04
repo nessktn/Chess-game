@@ -11,12 +11,17 @@ A simple chess game with a graphical interface built using Python, pygame, and p
    pip install -r requirements.txt
    ```
 
-3. Create an `assets` folder in the project directory and add chess piece images:
-   - You'll need images for both white and black pieces
-   - Required images: p_white.png, p_black.png (pawns), n_white.png, n_black.png (knights),
-     b_white.png, b_black.png (bishops), r_white.png, r_black.png (rooks),
-     q_white.png, q_black.png (queens), k_white.png, k_black.png (kings)
-   - The images should be square and will be automatically scaled to fit the board
+3. Chess piece images are automatically generated when you run the game (no manual setup required):
+   - The game will create high-quality flat 2D chess piece icons if they don't exist
+   - You can also run `python generate_pieces.py` manually to regenerate them
+   - Each piece has a distinctive design:
+     - Pawns: Sphere on cylinder base
+     - Knights: Horse head with flowing mane
+     - Bishops: Mitre shape with cross
+     - Rooks: Castle towers with battlements
+     - Queens: Crown with decorative jewels
+     - Kings: Crown with cross
+   - White pieces use light gray, black pieces use dark gray with black outlines
 
 ## Running the Game
 

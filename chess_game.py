@@ -5,6 +5,7 @@ import sys
 from typing import Tuple, Optional, List
 import time
 import os
+import generate_pieces
 
 class ChessEngine:
     def __init__(self):
@@ -13,6 +14,7 @@ class ChessEngine:
         
         # Initialize Pygame
         pygame.init()
+        pygame.mixer.init()  # Initialize mixer for sound effects
         
         # Constants
         self.SQUARE_SIZE = 80
@@ -37,6 +39,10 @@ class ChessEngine:
         # Load pieces
         self.pieces = {}
         self.load_pieces()
+        
+        # Load sound effects
+        self.sounds = {}
+        self.load_sounds()
         
         # Game state
         self.selected_square = None
@@ -76,10 +82,23 @@ class ChessEngine:
             sys.exit(1)
         
     def load_pieces(self):
+        # Ensure assets directory exists
+        if not os.path.exists('assets'):
+            os.makedirs('assets')
+        
         pieces = ['p', 'n', 'b', 'r', 'q', 'k']
         for piece in pieces:
-            self.pieces[f'w{piece}'] = pygame.image.load(f'assets/{piece}_white.png')
-            self.pieces[f'b{piece}'] = pygame.image.load(f'assets/{piece}_black.png')
+            white_path = f'assets/{piece}_white.png'
+            black_path = f'assets/{piece}_black.png'
+            
+            # Generate pieces if they don't exist
+            if not os.path.exists(white_path) or not os.path.exists(black_path):
+                print(f"Generating missing piece images for {piece}...")
+                generate_pieces.main()  # This will generate all pieces
+                break  # Only need to generate once
+            
+            self.pieces[f'w{piece}'] = pygame.image.load(white_path)
+            self.pieces[f'b{piece}'] = pygame.image.load(black_path)
             # Scale images to fit squares
             self.pieces[f'w{piece}'] = pygame.transform.scale(
                 self.pieces[f'w{piece}'], 
@@ -89,6 +108,18 @@ class ChessEngine:
                 self.pieces[f'b{piece}'], 
                 (self.SQUARE_SIZE, self.SQUARE_SIZE)
             )
+
+    def load_sounds(self):
+        try:
+            self.sounds['move'] = pygame.mixer.Sound('assets/move.wav')
+            self.sounds['check'] = pygame.mixer.Sound('assets/check.wav')
+        except FileNotFoundError:
+            print("Sound files not found. Please add 'move.wav' and 'check.wav' to the assets folder.")
+            self.sounds = {}  # Empty dict if sounds not found
+
+    def play_sound(self, sound_name: str):
+        if sound_name in self.sounds:
+            self.sounds[sound_name].play()
 
     def get_square_from_coords(self, pos: Tuple[int, int]) -> Optional[chess.Square]:
         x, y = pos
@@ -201,6 +232,13 @@ class ChessEngine:
             # Apply the move
             self.board.push(result.move)
             
+            # Play move sound
+            self.play_sound('move')
+            
+            # Check if king is in check and play sound
+            if self.board.is_check():
+                self.play_sound('check')
+            
             # Add move to history
             self.move_history.append(move_san)
             
@@ -252,6 +290,13 @@ class ChessEngine:
                                 
                                 # Apply the move
                                 self.board.push(move)
+                                
+                                # Play move sound
+                                self.play_sound('move')
+                                
+                                # Check if king is in check and play sound
+                                if self.board.is_check():
+                                    self.play_sound('check')
                                 
                                 # Add move to history
                                 self.move_history.append(move_san)
